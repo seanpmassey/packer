@@ -17,6 +17,7 @@ At a minimum, you'll need to edit the following files to get going:
 For the windows builds, you'll need to download packer-provisoner-windows-update from https://github.com/rgl/packer-provisioner-windows-update and make sure its somewhere where packer can find it.
 
 For usage, set you shell location to the packer directory and run one of the following:
+
 packer build -var-file=var-vsphere.json centos/centos7-vsphere.json
 packer build -var-file=var-vsphere.json centos/centos8-vsphere.json
 packer build -var-file=var-vsphere.json windows/2016/windows2016-vsphere.json
