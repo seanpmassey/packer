@@ -19,6 +19,9 @@ For the windows builds, you'll need to download packer-provisoner-windows-update
 For usage, set you shell location to the packer directory and run one of the following:
 
 packer build -var-file=var-vsphere.json centos/centos7-vsphere.json
+
 packer build -var-file=var-vsphere.json centos/centos8-vsphere.json
+
 packer build -var-file=var-vsphere.json windows/2016/windows2016-vsphere.json
+
 packer build -var-file=var-vsphere.json windows/2019/windows2019-vsphere.json
