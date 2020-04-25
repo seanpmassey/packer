@@ -1,0 +1,11 @@
+{
+  "var_vsphere_vcenter":            "<<vCenter FQDN>>",
+  "var_vsphere_username":           "<<vCenter username, e.g. administrator@vsphere.local>>",
+  "var_vsphere_password":           "<<vCenter password for the above user>>",
+  "var_vsphere_datacenter":         "<<vSphere datacenter name>>",
+  "var_vsphere_cluster":            "<<vSphere cluster name>>",
+  "var_vsphere_datastore":          "<<vSphere target datastore for templates>>",
+  "var_vsphere_network":            "<<vSphere portgroup for templates to build>>",
+  "var_vsphere_folder":             "<<vCenter folder path for templates>>",
+  "var_vsphere_iso_datastore":      "<<vSphere datastore for ISO files e.g. [DS02]>>"
+}

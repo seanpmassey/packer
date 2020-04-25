@@ -1,0 +1,128 @@
+{
+  "variables": {
+    "var_vm_name_ext":          "2016_vsphere_{{isotime \"20060102_1504\"}}",
+    "var_vm_guestos":           "windows9Server64Guest",
+    "var_vm_cpu_count":         "1",
+    "var_vm_disk_controller":   "pvscsi",
+    "var_vm_disk_size":         "51200",
+    "var_vm_notes":             "1.0-{{isotime \"20060102_1504\"}} (en_windows_server_2016_updated_feb_2018_x64_dvd_11636692.iso)",
+    "var_iso_path":             "os/microsoft/server/2016/en_windows_server_2016_updated_feb_2018_x64_dvd_11636692.iso",
+    "var_guest_username":       "administrator",
+    "var_guest_password":       "yourpassword"
+  },
+
+  "builders": [
+    {
+      "type":                   "vsphere-iso",
+      "name":                   "WindowsServer2016-STANDARD",
+
+      "vcenter_server":         "{{user `var_vsphere_vcenter`}}",
+      "username":               "{{user `var_vsphere_username`}}",
+      "password":               "{{user `var_vsphere_password`}}",
+      "insecure_connection":    "true",
+
+      "datacenter":             "{{user `var_vsphere_datacenter`}}",
+      "cluster":                "{{user `var_vsphere_cluster`}}",
+      "folder":                 "{{user `var_vsphere_folder`}}",
+      "datastore":              "{{user `var_vsphere_datastore`}}",
+      "network":                "{{user `var_vsphere_network`}}",
+      "convert_to_template":    "true",
+
+      "vm_name":                "ws{{user `var_vm_name_ext`}}",
+      "guest_os_type":          "{{user `var_vm_guestos`}}",
+      "CPUs":                   "{{user `var_vm_cpu_count`}}",
+      "RAM":                    "4096",
+      "disk_controller_type":   "{{user `var_vm_disk_controller`}}",
+      "disk_size":              "{{user `var_vm_disk_size`}}",
+      "disk_thin_provisioned":  true,
+      "network_card":           "vmxnet3",
+      "notes":                  "{{user `var_vm_notes`}}",
+
+      "communicator":           "winrm",
+      "winrm_username":         "{{user `var_guest_username`}}",
+      "winrm_password":         "{{user `var_guest_password`}}",
+
+      "iso_paths": [
+                                "{{user `var_vsphere_iso_datastore`}} {{user `var_iso_path`}}",
+                                "[] /vmimages/tools-isoimages/windows.iso"
+      ],
+      "shutdown_command":       "shutdown /s /t 10 /f /d p:4:1 /c Packer_Provisioning_Shutdown",
+      "floppy_files": [
+                                "./windows/2016/STANDARD/Autounattend.xml",
+                                "./windows/drivers/pvscsi-win8/pvscsi.cat",
+                                "./windows/drivers/pvscsi-win8/pvscsi.inf",
+                                "./windows/drivers/pvscsi-win8/pvscsi.sys",
+                                "./windows/drivers/pvscsi-win8/txtsetup.oem",
+                                "./windows/scripts/install-vmtools64.cmd",
+                                "./windows/scripts/2016/phase1-config.ps1"
+      ],
+      "remove_cdrom":           "true"
+    },
+
+    {
+      "type":                   "vsphere-iso",
+      "name":                   "WindowsServer2016-STANDARDCORE",
+
+      "vcenter_server":         "{{user `var_vsphere_vcenter`}}",
+      "username":               "{{user `var_vsphere_username`}}",
+      "password":               "{{user `var_vsphere_password`}}",
+      "insecure_connection":    "true",
+
+      "datacenter":             "{{user `var_vsphere_datacenter`}}",
+      "cluster":                "{{user `var_vsphere_cluster`}}",
+      "folder":                 "{{user `var_vsphere_folder`}}",
+      "datastore":              "{{user `var_vsphere_datastore`}}",
+      "network":                "{{user `var_vsphere_network`}}",
+      "convert_to_template":    "true",
+
+      "vm_name":                "wc{{user `var_vm_name_ext`}}",
+      "guest_os_type":          "{{user `var_vm_guestos`}}",
+      "CPUs":                   "{{user `var_vm_cpu_count`}}",
+      "RAM":                    "2048",
+      "disk_controller_type":   "{{user `var_vm_disk_controller`}}",
+      "disk_size":              "{{user `var_vm_disk_size`}}",
+      "disk_thin_provisioned":  true,
+      "network_card":           "vmxnet3",
+      "notes":                  "{{user `var_vm_notes`}}",
+
+      "communicator":           "winrm",
+      "winrm_username":         "{{user `var_guest_username`}}",
+      "winrm_password":         "{{user `var_guest_password`}}",
+
+      "iso_paths": [
+                                "{{user `var_vsphere_iso_datastore`}} {{user `var_iso_path`}}",
+                                "[] /vmimages/tools-isoimages/windows.iso"
+      ],
+      "shutdown_command":       "shutdown /s /t 10 /f /d p:4:1 /c Packer_Provisioning_Shutdown",
+      "floppy_files": [
+                                "./windows/2016/STANDARDCORE/Autounattend.xml",
+                                "./windows/drivers/pvscsi-win8/pvscsi.cat",
+                                "./windows/drivers/pvscsi-win8/pvscsi.inf",
+                                "./windows/drivers/pvscsi-win8/pvscsi.sys",
+                                "./windows/drivers/pvscsi-win8/txtsetup.oem",
+                                "./windows/scripts/install-vmtools64.cmd",
+                                "./windows/scripts/2016/phase1-config.ps1"
+      ],
+      "remove_cdrom":           "true"
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type":                   "powershell",
+      "scripts":                ["./windows/scripts/2016/phase2-config.ps1"]
+    },
+    {
+      "type":                   "windows-restart",
+      "restart_timeout":        "30m"
+    },
+    {
+      "type":                   "windows-update",
+      "search_criteria":        "IsInstalled=0",
+      "filters": [
+                                "exclude:$_.Title -like '*Preview*'",
+                                "include:$true"
+      ]
+    }
+  ]
+}
